@@ -1,0 +1,91 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "g++ Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/helloworld.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\MinGW\\mingw64\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: g++.exe build active file"
+        },
+        {
+            "name": "g++ Test PCHE",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/c/build/TestPCHE.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/src/c/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\TDM-GCC-64\\bin\\gdb64.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: build TestPCHE"
+        },
+        {
+            "name": "Python: TestPCHEMeshram",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/python",
+            "program": "main.py",
+            "console": "integratedTerminal"            
+        },
+        {
+            "name": "Python: Test TP_RCBC",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/python",
+            "program": "rcbc_sim.py",
+            "console": "integratedTerminal"            
+        },
+        {
+            "name": "Python: TP_PCHE Test(Meshram)",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/python",
+            "program": "test_meshram.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: TP_PCHE Test(Marchionni)",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/python",
+            "program": "test_marchionni.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }                
+    ]
+}

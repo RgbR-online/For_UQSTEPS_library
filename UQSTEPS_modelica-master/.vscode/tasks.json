@@ -1,0 +1,112 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+		{
+			"type": "shell",
+			"label": "C/C++: build CoolProp",
+			"command": "cmd.exe",
+			"linux": {
+				"command": "bash"
+			},
+			"args": [
+				"/c",
+				"../scripts/buildCoolProp.bat"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/c"
+			},
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "C/C++: build MyProps",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"..\\scripts\\buildMyProps.bat"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/c"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "C/C++: build Test",
+			"command": "C:\\MinGW\\mingw64\\mingw64\\bin\\gcc.exe",
+			"args": [
+				"-std=c++11",
+				"-m64",
+				"-L../../lib",
+				"-I../",
+				"-I../externals/CoolProp/include",
+				"-I../externals/CoolProp/externals/fmtlib",
+				"../main.cpp",
+				"-lMyProps",
+				"-lCoolProp"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/c/build"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "C/C++: build Test_CMake",
+			"command": "cmake",
+			"args": [
+				"..",
+				"-G",
+				"MinGW Makefiles",
+				"-I../",
+				"-I../externals/CoolProp/include",
+				"-I../externals/CoolProp/externals/fmtlib",
+				"../main.cpp",
+				"-lCoolProp",
+				"../../../lib/myProps.a"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/src/c/build"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "C/C++: build TestPCHE",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"..\\scripts\\buildTestPCHE.bat"
+			],
+			"linux": {
+				"command": "bash",
+				"args": [
+					"buildPCHE.sh"
+				]
+			},
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}/src/c"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		}
+	]
+}

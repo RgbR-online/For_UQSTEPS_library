@@ -1,0 +1,20 @@
+from distutils.core import setup
+
+setup(name='solartherm',
+		version='@VERSION@',
+		packages=['solartherm'],
+#		package_dir={'solartherm':'./solartherm'},
+		scripts=[
+			'scripts/st_wea_to_mo',
+			'scripts/st_plotmat',
+			'scripts/st_simulate',
+			'scripts/st_optimise',
+			'scripts/st_sensitivity',
+			'scripts/st_get_aemo_prices',
+			'scripts/st_inspect',
+			'scripts/st_conv_sam_hourly',
+			'scripts/st_cost',
+			'scripts/TMY3_to_motab.py',
+			]
+		)
+

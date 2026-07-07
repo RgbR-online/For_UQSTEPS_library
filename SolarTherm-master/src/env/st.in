@@ -1,0 +1,184 @@
+#!@PYTHON_SHEBANG@
+from __future__ import print_function
+from __future__ import unicode_literals 
+
+import os, subprocess, sys, platform, re, shutil
+from pathlib import Path,PurePath
+
+# TODO note that distutils has the feature of correcting the shebang of installed
+# scripts. we should used distutils to sort out this file, therefore.
+
+# SolarTherm invocation script
+# This is an alternative to the current 'st_local_env' thing, which seems to be
+# unnecessarily complicated for new users. The idea is for this single script
+# to be installed on the user's PATH, and then for all SolarTherm scripts to
+# run 'through' this wrapper script. For example 'st_simulate' becomes 'st simulate'
+# with no underscore.
+
+# A complication with 'st' is that on Windows, we don't recognise the SHEBANG
+# comment at the top of our scripts as a way of telling the shell that this
+# is Python script. For that case, this script sets env var SOLARTHERM_SHELL as 
+# the command that must be used to run this script again in a nested process. We 
+# need that in order to be able to run tools like st_wea_to_mo from inside
+# OpenModelica.
+
+#-------------------------------------------------------------------------------
+# utility routines for handling paths, special treatment required for MSYS2.
+
+NEWENV = os.environ.copy()
+		
+def CYG(path):
+	"""Convert a MSYS path to a native Windows path, where necessary."""
+	if not platform.system() == "Windows":
+		return path # no action required on Linux
+	if not os.environ.get("MSYSTEM"):
+		print("This script must be run from inside an MSYS MINGW64 prompt")
+		sys.exit(2)
+	return subprocess.check_output(['cygpath','-w',path],encoding='utf-8').strip()
+
+def prepend(path,envvar):
+	pp = NEWENV.get(envvar)
+	if os.environ.get('VERBOSE'):
+		print("Prepending '%s' to %s=%s" %(path,envvar,pp))
+	if pp is not None:
+		path = os.pathsep.join([path,pp])
+	NEWENV[envvar] = path
+
+def append(path,envvar):
+	pp = NEWENV.get(envvar)
+	if os.environ.get('VERBOSE'):
+		print("Appending '%s' to %s=%s" %(path,envvar,pp))
+	if pp is not None:
+		path = os.pathsep.join([pp,path])
+	NEWENV[envvar] = path
+
+def inpath(path,envvar):
+	vals = NEWENV.get(envvar,"").split(os.pathsep)
+	p = os.path.normpath(path)
+	for v in vals:
+		if os.path.normpath(v) == p:
+			#print("Found '%s' in %s"%(p,envvar))
+			return True
+	return False
+
+def append_if_missing(path,var):
+	for p in path.split(os.pathsep):
+		p1 = CYG(p)
+		if not inpath(p,var):
+			append(p,var)
+
+#-------------------------------------------------------------------------------
+# setting env vars
+
+instp = CYG('@PREFIX@')
+
+NEWENV['INSTALL_PREFIX'] = instp
+assert os.environ.get('HOME')
+omlibp = os.path.join(instp,"lib","omlibrary")
+
+#NEWENV['OPENMODELICALIBRARY']=os.pathsep.join([
+#	CYG(os.path.join(os.path.expandvars("$HOME"),".openmodelica","libraries"))
+#	,CYG(omlibp)
+#	,CYG("/usr/lib/omlibrary")
+#	,CYG("/usr/local/lib/omlibrary")
+#])
+
+NEWENV['SOLARTHERM_SHELL'] = " ".join([sys.executable,os.path.join(instp,"bin","st")])
+
+NEWENV['ST_MPIRUN'] = CYG('@ST_MPIRUN@')
+#-------------------------------------------------------------------------------
+# adding path components if required
+
+# needed paths as identified by SCons at installation time:
+st_paths = {
+	'PATH':"@ST_PATH@"
+	, 'PYTHONPATH':"@ST_PYTHONPATH@"
+	, 'OPENMODELICALIBRARY':"@ST_MODELICAPATH@"
+}
+for k in st_paths:
+	append_if_missing(st_paths[k],k)
+
+if platform.system()=="Windows":
+	resp = PurePath(omlibp)/'SolarTherm'/'Resources'/'Library'
+	prepend(CYG(resp),'PATH')
+	#print("MSYSTEM_PREFIX =",os.environ.get('MSYSTEM_PREFIX'))
+	prepend(os.environ.get('MSYSTEM_PREFIX'),'PYTHONHOME')
+
+if os.environ.get('VERBOSE'):
+	print("Updated environment:")
+	for v in ['OPENMODELICALIBRARY','PATH','LD_LIBRARY_PATH','LIBRARY_PATH'
+			,'PYTHONPATH','PYTHONHOME','ST_MPIRUN']:
+		print("   ",v,"=",NEWENV.get(v))
+	print("which bash?",shutil.which('bash'))
+
+#-------------------------------------------------------------------------------
+# run the requested action...
+
+cmds = ['env','python','simulate','optimise','inspect','plotmat'
+		,'cost','conv_sam_ourly','wea_to_mo']
+
+if len(sys.argv) == 1 or sys.argv[1] == "--help":
+	print("'st' is a helper script for running SolarTherm tools. It should be")
+	print("followed by a sub-command, eg \"st simulate\". The valid sub-commands")
+	print("are:")
+	print("    %s"%("\n    ".join(cmds)))
+	print("For help with sub-commands, type eg \"st simulate --help\"")
+	sys.exit(0)
+
+if len(sys.argv) == 2 and sys.argv[1] == '--version':
+	import solartherm
+	print("SolarTherm",solartherm.__version__)
+	sys.exit(0)
+
+if sys.argv[1] not in cmds:
+	print("Invalid sub-command '%s'. Type \"st --help`\" for a list of valid options."%(sys.argv[1]))
+	sys.exit(1)
+
+if sys.argv[1] == 'env':
+	shargs = []
+	if os.environ.get('SOLARTHERM_SHELL'):
+		raise RuntimeError("You are already inside a SolarTherm shell")
+	default_ps1 = r'\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+	ps1 = os.environ.get('PS1',default_ps1)
+	if re.search(re.escape(r'\]\n\[\e[32m\]\u@\h'),ps1):
+		# correctly annotate the multi-line msys default prompt
+		ps1,n = re.subn(re.escape(r'\n'),'\\nst> ',ps1,count=1)
+		assert n==1
+	else:
+		# otherwise just add at the start
+		ps1 = 'st> ' + ps1
+	NEWENV['PS1'] = ps1
+	
+	if os.environ.get('VERBOSE'):
+		print("Entering st env...")
+
+	if 'STBASHRC' not in os.environ:
+		shargs += ['--norc']
+
+	# FIXME we should use CYG(os.environ['SHELL']) instead of just 'bash'.
+	bash = 'bash'
+	if platform.system()=="Windows":
+		# essential because Windows doesn't respect $PATH https://is.gd/dbpTSB
+		bash = shutil.which(bash)
+	call = [bash] + shargs
+
+elif sys.argv[1] == 'python':
+	call = [sys.executable]
+else:
+	scr = 'st_%s'%(sys.argv[1])
+	call = [sys.executable,os.path.join(instp,"bin",scr)]
+
+if os.environ.get('VERBOSE'):
+	print("CALL =",call)
+	print("ARGS =",sys.argv[2:])
+	print("PATH =",NEWENV.get('PATH'))
+
+try:
+	res = subprocess.run(call + sys.argv[2:],env=NEWENV)
+except FileNotFoundError as e:
+	raise RuntimeError("File not found running \"%s\""%(" ".join(call+sys.argv[2:]),))
+	
+sys.exit(res.returncode)
+
+# vim: ts=4:sw=4:tw=80:noet:syntax=python
+
