@@ -1,6 +1,6 @@
 within SolarTherm.Models.Fluid.Valves;
 model Valve
-  replaceable package Medium = SolarTherm.Media.MoltenSalt.MoltenSalt_base
+  replaceable package Medium = SolarTherm.Media.MoltenSalt.MoltenSalt_ph
     constrainedby Modelica.Media.Interfaces.PartialMedium
     "Medium in the component"
       annotation (choicesAllMatching = true);
@@ -22,18 +22,22 @@ model Valve
         rotation=-90,
         origin={0,98})));
 equation
-   fluid_a.p=fluid_b2.p;
+   // Pressions (Équilibre sur les branches)
+   fluid_a.p = fluid_b1.p;
+   fluid_a.p = fluid_b2.p;
 
-   fluid_a.h_outflow=inStream(fluid_a.h_outflow);
-   fluid_b1.h_outflow=inStream(fluid_a.h_outflow);
-   fluid_b2.h_outflow=inStream(fluid_a.h_outflow);
+   // Enthalpies (Le coeur du problème)
+   // Ce qui sort par b1 et b2 vient de ce qui entre par a
+   fluid_b1.h_outflow = inStream(fluid_a.h_outflow);
+   fluid_b2.h_outflow = inStream(fluid_a.h_outflow);
 
-   fluid_a.Xi_outflow=inStream(fluid_a.Xi_outflow);
-   fluid_b2.Xi_outflow=inStream(fluid_a.Xi_outflow);
-   fluid_b1.Xi_outflow=inStream(fluid_a.Xi_outflow);
+   // Bilans de masse (Xi)
+   fluid_b1.Xi_outflow = inStream(fluid_a.Xi_outflow);
+   fluid_b2.Xi_outflow = inStream(fluid_a.Xi_outflow);
 
-   fluid_b1.m_flow=-opening*fluid_a.m_flow;
-   fluid_b2.m_flow=-(1-opening)*fluid_a.m_flow;
+   // Distribution du débit
+   fluid_b1.m_flow = -opening * fluid_a.m_flow;
+   fluid_b2.m_flow = -(1 - opening) * fluid_a.m_flow;
 
   annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,0},
             {100,100}})),              Icon(coordinateSystem(extent={{-100,0},{100,

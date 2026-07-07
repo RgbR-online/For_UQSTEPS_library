@@ -42,9 +42,9 @@ model PCHeatExchanger
     // pitch angle
     phi = from_deg((180 - 108) /2),
     // length of pche, mm
-    length = 2860e-3,
+    L = 2860e-3,
     // Diameter of semi_circular
-    d_c = 2e-3,
+    d = 2e-3,
     // number of channels
     N_ch = integer(80e3),
     // number of segments
@@ -58,15 +58,15 @@ model PCHeatExchanger
   // Geometry determined correlation coefficients - a, b, c d
   inner KimCorrelations kim_cor(phi = geo.phi, pitch = geo.pitch, d_h = d_h); 
   
-  inner Modelica.SIunits.Length length_cell = geo.length / geo.N_seg "length of a cell";  
+  inner Modelica.SIunits.Length length_cell = geo.L / geo.N_seg "length of a cell";  
   
   inner CoolPropExternalObject cp_wrapper(PBMedia.mediumName, name);
   
   // d_c determined variables, d_h, A_c, peri_c
   inner Modelica.SIunits.Diameter d_h = 4 * A_c / peri_c "Hydraulic Diameter";  
-  inner Modelica.SIunits.Area A_c = Modelica.Constants.pi * geo.d_c * geo.d_c / 8 "Area of semi-circular tube"; 
-  inner Modelica.SIunits.Length peri_c = geo.d_c * Modelica.Constants.pi / 2 + geo.d_c "perimeter of semi-circular"; 
-  inner Modelica.SIunits.Length t_wall = (2 - Modelica.Constants.pi  / 4) * (geo.d_c / 2) "thickness of wall between two neighboring hot and cold"; 
+  inner Modelica.SIunits.Area A_c = Modelica.Constants.pi * geo.d * geo.d / 8 "Area of semi-circular tube"; 
+  inner Modelica.SIunits.Length peri_c = geo.d * Modelica.Constants.pi / 2 + geo.d "perimeter of semi-circular"; 
+  inner Modelica.SIunits.Length t_wall = (2 - Modelica.Constants.pi  / 4) * (geo.d / 2) "thickness of wall between two neighboring hot and cold"; 
   inner Modelica.SIunits.Area A_stack = peri_c * length_cell * geo.N_ch "surface area of all cells in a stack";
   inner Modelica.SIunits.Area A_flow = geo.N_ch * A_c "Flow area for all channels";
   
@@ -97,7 +97,7 @@ model PCHeatExchanger
     each inlet.h_outflow.start = bc.st_cold_in.h,
     //each outlet.p.start = p_start_cold,
     //each outlet.h_outflow.start = CP.PropsSI("H", "P", p_start_cold, "T", T_start_cold, PBMedia.mediumName),
-    each T.start = bc.st_cold_in.T, 
+    T.start = linspace(bc.st_cold_out.T, bc.st_cold_in.T, geo.N_seg), 
     each Re.start = Re_cold_start,  
     //each inlet.m_flow.start = mdot_start_cold,  
     id = {i + 2000 for i in 1 : geo.N_seg}); 
@@ -108,7 +108,7 @@ model PCHeatExchanger
     each inlet.h_outflow.start = bc.st_hot_in.h,  
     //each outlet.p.start = p_start_hot, 
     //each outlet.h_outflow.start = CP.PropsSI("H", "P", p_start_hot, "T", T_start_hot, PBMedia.mediumName),
-    each T.start = bc.st_hot_in.T,     
+    T.start = linspace(bc.st_hot_in.T, bc.st_hot_out.T, geo.N_seg),     
     each Re.start = Re_hot_start,
     //each inlet.m_flow.start = mdot_start_hot,
     id = {i + 1000 for i in 1 : geo.N_seg});

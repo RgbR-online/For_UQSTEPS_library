@@ -57,63 +57,36 @@ model KimCorrelations  "Correlation constants in Kim [2012]"
   Modelica.Blocks.Types.ExternalCombiTable1D table_d = Modelica.Blocks.Types.ExternalCombiTable1D(tableName = "5d_d", fileName = Modelica.Utilities.Files.loadResource("modelica://Steps/Resources/Data/kim_2012.txt"), table = fill(0.0, 9, 2), smoothness = Modelica.Blocks.Types.Smoothness.LinearSegments, columns = 2:2);
 
 algorithm
-
-    // determine fitting constant by pitch and hydraulic diameter
+    // determine fitting constant by pitch and hydraulic diameter directly
     if(abs(pitch - 12.3e-3) <= abs(pitch - 24.6e-3)) then //close to pitch = 12.3
       
-      if(abs(d_h - 0.922e-3) <= abs(d_h - 1.222e-3)) then // clost to d_h 0.922
-        table_a := table_4b_a;
-        table_b := table_4b_b;
-        table_c := table_5b_c;
-        table_d := table_5b_d;
+      if(abs(d_h - 0.922e-3) <= abs(d_h - 1.222e-3)) then // close to d_h 0.922
+        a := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4b_a, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        b := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4b_b, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        c := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5b_c, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        d := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5b_d, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
       else
-        //default value - table_4d, 5d should be used here
-        table_a := table_4b_a;
-        table_b := table_4b_b;
-        table_c := table_5b_c;
-        table_d := table_5b_d;        
+        //default value - table_4b, 5b dual branch
+        a := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4b_a, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        b := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4b_b, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        c := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5b_c, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        d := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5b_d, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));        
       end if;
       
-    else
+    else // close to pitch = 24.6
     
       if(abs(d_h - 0.922e-3) <= abs(d_h - 1.222e-3)) then
-        table_a := table_4a_a;
-        table_b := table_4a_b;
-        table_c := table_5a_c;
-        table_d := table_5a_d;
+        a := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4a_a, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        b := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4a_b, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        c := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5a_c, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        d := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5a_d, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
       else
-        table_a := table_4c_a;
-        table_b := table_4c_b;
-        table_c := table_5c_c;
-        table_d := table_5c_d;
+        a := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4c_a, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        b := Modelica.Blocks.Tables.Internal.getTable1DValue(table_4c_b, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        c := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5c_c, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
+        d := Modelica.Blocks.Tables.Internal.getTable1DValue(table_5c_d, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi));
       end if;       
       
     end if;
-    
-    /*
-    if (MyUtil.sameValue(pitch, 24.6 * 1e-3) and MyUtil.sameValue(d_h, 0.922 * 1e-3)) then
-      table_a := table_4a_a;
-      table_b := table_4a_b;
-      table_c := table_5a_c;
-      table_d := table_5a_d;
-    elseif (MyUtil.sameValue(pitch, 12.3 * 1e-3) and MyUtil.sameValue(d_h, 0.922 * 1e-3)) then
-      table_a := table_4b_a;
-      table_b := table_4b_b;
-      table_c := table_5b_c;
-      table_d := table_5b_d;
-    elseif (MyUtil.sameValue(pitch, 24.6 * 1e-3) and MyUtil.sameValue(d_h, 1.222 * 1e-3)) then
-      table_a := table_4c_a;
-      table_b := table_4c_b;
-      table_c := table_5c_c;
-      table_d := table_5c_d;
-    end if;      
-    */
-    a := Modelica.Blocks.Tables.CombiTable1D.getTableValue(table_a, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi), tableAvailable = 1.0);
-    
-    b := Modelica.Blocks.Tables.CombiTable1D.getTableValue(table_b, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi), tableAvailable = 1.0);
-    
-    c := Modelica.Blocks.Tables.CombiTable1D.getTableValue(table_c, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi), tableAvailable = 1.0);
-    
-    d := Modelica.Blocks.Tables.CombiTable1D.getTableValue(table_d, icol = 1, u = Modelica.SIunits.Conversions.to_deg(phi), tableAvailable = 1.0);  
 
 end KimCorrelations;

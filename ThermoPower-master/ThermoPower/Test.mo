@@ -4163,7 +4163,7 @@ This model test the <tt>Compressor</tt> model with an inertial load. Boundary co
           thickness=0.5));
     initial equation
       Inertia1.w = 523.3;
-
+    
     equation
       connect(Turbine1.shaft_b, Inertia1.flange_a) annotation (Line(
           points={{-8,0},{-4,0},{-4,0},{10,0}},
@@ -4173,10 +4173,10 @@ This model test the <tt>Compressor</tt> model with an inertial load. Boundary co
         experiment(StopTime=10),
         experimentSetupOutput,
         Documentation(info="<html>
-This model test the Turbine model with an inertial load. Boundary conditions and data refer to an turbojet engine at 11.000 m.
-
-<p>Simulate for 5 seconds.
-</html>"));
+    This model test the Turbine model with an inertial load. Boundary conditions and data refer to an turbojet engine at 11.000 m.
+    
+    <p>Simulate for 5 seconds.
+    </html>"));
     end TestGasTurbine;
 
     model TestGasTurbineStodola

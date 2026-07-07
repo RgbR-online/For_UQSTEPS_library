@@ -32,7 +32,7 @@ model CoolProp
     output Real k;
     output Real rho;
   
-    external "C" T = MyPropsSI_pH(p, H, fluidName, mu, k, rho);
+    external "C" T = MyPropsSI(p, H, fluidName, mu, k, rho);
     annotation(
       Library = {"MyProps"},
       LibraryDirectory = "modelica://Steps/Resources/Library");

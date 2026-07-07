@@ -4,13 +4,13 @@ model TestMixer
   "StandAlone Component Test For FanCooler"      
   
   import Modelica.SIunits.Conversions.{from_bar, from_degC};
-  import Steps.Components.PCHEBoundaryCondition;
-  import Steps.Components.ThermoState;
+  import Steps.Model.HEBoundaryCondition;
+  import Steps.Model.ThermoState;
 
   parameter Steps.Cycle.OffDPBParamSet param;  
   
-  parameter PCHEBoundaryCondition bc_LTR = param.bc_LTR;
-  parameter PCHEBoundaryCondition bc_HTR = param.bc_HTR;
+  parameter HEBoundaryCondition bc_LTR = param.bc_LTR;
+  parameter HEBoundaryCondition bc_HTR = param.bc_HTR;
   parameter ThermoState bc_bypass = param.bc_bypass;  
     
   // **** Arbitary inputs ****
@@ -23,14 +23,14 @@ model TestMixer
   parameter Modelica.SIunits.TemperatureDifference DT_COOLER = 18.0;
   // **** Arbitary inputs - end ****
   
-  Components.Source source(
+  Steps.Components.Source source(
     p_outlet = bc_LTR.st_cold_out.p,
     T_outlet = bc_LTR.st_cold_out.T,
     mdot_init = bc_LTR.st_cold_out.mdot,
     fix_state = true
   );
 
-  Components.Source source_2(
+  Steps.Components.Source source_2(
     p_outlet = bc_bypass.p,
     T_outlet = bc_bypass.T,
     mdot_init = bc_bypass.mdot,
@@ -39,14 +39,14 @@ model TestMixer
     fix_state = false
   );
 
-  Components.Sink sink(
+  Steps.Components.Sink sink(
     p_inlet = bc_HTR.st_cold_in.p,
     T_inlet = bc_HTR.st_cold_in.T,
     mdot_init = bc_HTR.st_cold_in.mdot,
     fix_state = false
   );
 
-  Components.Mixer mixer(
+  Steps.Components.Mixer mixer(
     outlet.p(start = bc_HTR.st_cold_in.p),
     outlet.h_outflow(start = bc_HTR.st_cold_in.h),
     inlet.p(start = bc_LTR.st_cold_out.p),

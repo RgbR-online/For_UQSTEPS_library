@@ -4,8 +4,8 @@ model TestTurbine
   "StandAlone Component Test For Turbine"      
   
   import Modelica.SIunits.Conversions.{from_bar, from_degC};  
-  import Steps.Components.PCHEBoundaryCondition;
-  import Steps.Components.ThermoState;
+  import Steps.Model.HEBoundaryCondition;
+  import Steps.Model.ThermoState;
   
   // **** parameter from on-design simulation - START ****
   // UQMECH05_99_CL02_B 1 MW Power Block (RCBC)_2.pdf
@@ -25,14 +25,14 @@ model TestTurbine
   parameter Real eta_turbine = 0.9;   
   // **** Arbitary inputs - END ****       
   
-  Components.Source source(
+  Steps.Components.Source source(
     p_outlet = bc_in.p,
     T_outlet = bc_in.T,
     mdot_init = bc_in.mdot,
     fix_state = true
   );
 
-  Components.Sink sink(
+  Steps.Components.Sink sink(
     p_inlet = bc_out.p,
     T_inlet = bc_out.T,
     mdot_init = bc_out.mdot,

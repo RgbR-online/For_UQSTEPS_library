@@ -55,7 +55,7 @@ void EXPORT_MY_CODE MyPropsSI_pT(double p, double T, const std::string &FluidNam
 /**
  * batch Props query function using (p,H), one thermo state in, multiple outputs out to save time of calling CoolProp
  */
-double EXPORT_MY_CODE MyPropsSI_pH(double p, double H, const char * FluidName, double &mu, double &k, double &rho);
+double EXPORT_MY_CODE MyPropsSI_pH(double p, double H, const char * FluidName, double *mu, double *k, double *rho);
 
 /**
  * off-design simulation for PCHE

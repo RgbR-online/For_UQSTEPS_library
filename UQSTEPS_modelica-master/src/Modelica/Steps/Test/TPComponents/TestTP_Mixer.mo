@@ -8,11 +8,11 @@ model TestTP_Mixer
   import ThermoPower.System; 
   import ThermoPower.Choices; 
 //package Medium = Modelica.Media.IdealGases.MixtureGases.CombustionAir;
-  package Medium = Media.CO2;// Modelica.Media.IdealGases.MixtureGases.CombustionAir;
+  package Medium = Steps.Media.CO2;// Modelica.Media.IdealGases.MixtureGases.CombustionAir;
   // package Medium = Modelica.Media.IdealGases.SingleGases.CO2;
   
   parameter Real wext=10;
-  Components.SSMixer Mixer1(
+  Steps.TPComponents.SSMixer Mixer1(
     redeclare package Medium = Medium,
     gamma=0.8,
 S=1,
@@ -111,7 +111,7 @@ equation
           50},{-70,33}}, color={0,0,127}));
   annotation (
     Diagram(graphics),
-    experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-3, Interval = 1),
+    experiment(StartTime = 0, StopTime = 20, Tolerance = 1e-3, Interval = 1),
     __OpenModelica_commandLineOptions = "--matchingAlgorithm=PFPlusExt --indexReductionMethod=dynamicStateSelection -d=initialization,NLSanalyticJacobian,aliasConflicts,bltdump",    
     __OpenModelica_simulationFlags(lv = "LOG_DEBUG,LOG_NLS,LOG_NLS_V,LOG_STATS,LOG_INIT,LOG_STDOUT, -w", outputFormat = "mat", s = "dassl"),
     Documentation(info="<html>

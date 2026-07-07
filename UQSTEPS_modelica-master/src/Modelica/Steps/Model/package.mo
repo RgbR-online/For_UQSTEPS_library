@@ -128,6 +128,7 @@ package Model "Data model definition for consistent parameter configuration"
     input Real p1 = 0;
     input Real p2 = 0; 
     output AreaGeometry geo;
+  protected
     constant Real pi = Modelica.Constants.pi;
   end SetAreaGeometry;
 
@@ -213,6 +214,7 @@ package Model "Data model definition for consistent parameter configuration"
     input Real p2    = 0;
     input AreaGeometry geo_area;
     output PathGeometry geo;
+  protected
     constant Real pi = Modelica.Constants.pi;
   protected
     Real peri_in;

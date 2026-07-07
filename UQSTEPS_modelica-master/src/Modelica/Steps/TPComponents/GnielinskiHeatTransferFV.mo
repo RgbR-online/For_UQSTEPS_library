@@ -185,7 +185,7 @@ equation
 
     //th_conductivity.u[1] = (Tw[j] + T_vol[j]) / 2;
     // k_wall[j] =  MyUtil.metal_conductivity(th_conductivity.tableID, (Tw[j] + T_vol[j]) / 2);
-    k_wall[j] =  MyUtil.metal_conductivity(th_conductivity.tableID, Tw[j]);
+    k_wall[j] = MyUtil.metal_conductivity(table_th_conductivity, Tw[j]);
     
     gamma[j] = noEvent(1 / (1 / hc[j] + t_wall / k_wall[j]));
     

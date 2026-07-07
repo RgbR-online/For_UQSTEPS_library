@@ -11,7 +11,7 @@ package MoltenSalt
         definitions given in the base class Interfaces.PartialMedium"
         */
     /* IMPORTANT extends from PartialPureSubstance instead of PartialMedium - Xin Sui 20210208 */
-    extends Modelica.Media.Interfaces.PartialPureSubstance(ThermoStates = Modelica.Media.Interfaces.Choices.IndependentVariables.pT, final mediumName = "MoltenSalt", final substanceNames = {"NaNO3", "KNO3"}, final singleState = false, final reducedX = true, final fixedX = true, Temperature(min = 573.15, max = 873.15, start = 800));
+    extends Modelica.Media.Interfaces.PartialPureSubstance(ThermoStates = Modelica.Media.Interfaces.Choices.IndependentVariables.pT, final mediumName = "MoltenSalt", final substanceNames = {"NaNO3", "KNO3"}, final singleState = false, Temperature(min = 573.15, max = 873.15, start = 800));
     import Steps.Media.MoltenSalt.MoltenSalt_utilities.*;
     // Provide medium constants here
     //constant SpecificHeatCapacity cp_const=123456

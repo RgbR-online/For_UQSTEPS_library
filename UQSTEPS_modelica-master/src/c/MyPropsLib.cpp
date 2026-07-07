@@ -1,4 +1,6 @@
-#include "CoolPropLib.h"
+extern "C" {
+    #include "CoolPropLib.h"
+}
 #include "AbstractState.h"
 #include "DataStructures.h"
 #include "MyPropsLib.h"
@@ -116,7 +118,7 @@ void EXPORT_MY_CODE MyPropsSI_pT(double p, double T, const std::string &FluidNam
     return;
 }
 
-double EXPORT_MY_CODE MyPropsSI_pH(double p, double H, const char * FluidName , double &mu, double &k, double &rho)
+double EXPORT_MY_CODE MyPropsSI_pH(double p, double H, const char * FluidName, double *mu, double *k, double *rho)
 {
     const long buffersize = 500;
     long errcode = 0;
@@ -132,14 +134,13 @@ double EXPORT_MY_CODE MyPropsSI_pH(double p, double H, const char * FluidName , 
 	AbstractState_update(handle, _HP, H , p, &errcode, buffer, buffersize);
 
 	T = AbstractState_keyed_output(handle, _T, &errcode, buffer, buffersize);
-	mu = AbstractState_keyed_output(handle, _MU, &errcode, buffer, buffersize);
-	k = AbstractState_keyed_output(handle, _K, &errcode, buffer, buffersize);
-	rho = AbstractState_keyed_output(handle, _Dmass, &errcode, buffer, buffersize);
+	*mu = AbstractState_keyed_output(handle, _MU, &errcode, buffer, buffersize);
+    *k = AbstractState_keyed_output(handle, _K, &errcode, buffer, buffersize);
+    *rho = AbstractState_keyed_output(handle, _Dmass, &errcode, buffer, buffersize);
 
-    if( T < 0 || T >= 3000|| mu < 0 || mu > 50e3|| k < 0 || k > 10e3 || rho < 0 || rho > 10e3)
+    if( T < 0 || T >= 3000 || *mu < 0 || *mu > 50e3 || *k < 0 || *k > 10e3 || *rho < 0 || *rho > 10e3)
     {
-        // print error state values for debug
-        cout<<string_format("(T, mu, k, rho)_(%d, %d) = (%d, %d, %d, %d)\n", p, H, T, mu, k, rho);
+        cout << string_format("(T, mu, k, rho) = (%f, %f, %f, %f)\n", T, *mu, *k, *rho);
     }
 
 	return T;

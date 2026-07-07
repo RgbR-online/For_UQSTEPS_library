@@ -46,7 +46,7 @@ partial model HeatExchangerG2G "Base class for heat exchanger gas - gas (derived
     annotation(Dialog(tab = "Initialization"));
   parameter SI.Temperature Tstartbar_M = Tstartbar_G - 50 "Start value of the average metal temperature" annotation(
     Dialog(tab = "Initialization"));
-  parameter SI.Pressure pstart_F = cfg_G.st_in.p "50e5 Pressure start value, fluid side" annotation(
+  parameter SI.Pressure pstart_F = fluidNomPressure "50e5 Pressure start value, fluid side" annotation(
     Dialog(tab = "Initialization"));
   parameter Boolean SSInit = false "Steady-state initialization" annotation(
     Dialog(tab = "Initialization"));

@@ -41,7 +41,7 @@ function thermal_conductivity "cal thermal conductivity of a material"
 algorithm
   if(Modelica.Utilities.Strings.compare(name, "inconel 750") == Modelica.Utilities.Types.Compare.Equal) then
     // FIX IT: icol = 0， 1？ 
-    k := Modelica.Blocks.Tables.CombiTable1D.getTableValue(tableID, icol = 1, u = temperature, tableAvailable = 1.0); 
+    k := Modelica.Blocks.Tables.Internal.getTable1DValue(tableID, icol = 1, u = temperature); 
   else
     k := 16.2;
   end if;
@@ -50,16 +50,18 @@ end thermal_conductivity;
 
 function metal_conductivity "cal thermal conductivity of a material"
   extends Modelica.Icons.Function;
-  input Modelica.Blocks.Types.ExternalCombiTable1D tableID;
+  
+  input Real[:,:] table_data "Table data";
   input Modelica.SIunits.Temp_C temperature;  
   output Modelica.SIunits.ThermalConductivity k;  
+
+protected
+  Integer iNew;
+
 algorithm
-  /*
-  table.u := temperature;
-  k := table.y[1];
-  */
-  k := Modelica.Blocks.Tables.CombiTable1D.getTableValue(tableID, icol = 1, u = temperature, tableAvailable = 1.0); 
-end metal_conductivity;   
+  (k, iNew) := Modelica.Math.Vectors.interpolate(table_data[:,1], table_data[:,2], temperature, 1);
+  
+end metal_conductivity;
 
 function myAssert "customerized assert function to generate more detailed information"
   input Boolean debug = false;

@@ -1,4 +1,6 @@
-#include "CoolPropLib.h"
+extern "C" {
+    #include "CoolPropLib.h"
+}
 #include "PCHE.h"
 #include <iostream>
 #include <sstream>

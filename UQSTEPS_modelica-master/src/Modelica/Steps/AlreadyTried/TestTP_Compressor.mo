@@ -1,4 +1,4 @@
-within Steps.Test.TPComponents;
+within Steps.AlreadyTried;
 
 model TestTP_Compressor
   "Test for HE in ThermoPower"  

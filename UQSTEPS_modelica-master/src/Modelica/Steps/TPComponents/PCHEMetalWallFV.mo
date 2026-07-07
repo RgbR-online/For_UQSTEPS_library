@@ -57,7 +57,7 @@ equation
   th_conductivity.u[1] = 0.0;
   
   for j in 1:Nw loop
-    k_wall[j] =  MyUtil.metal_conductivity(th_conductivity.tableID, Tvol[j]);    
+    k_wall[j] =  MyUtil.metal_conductivity(th_conductivity.table, Tvol[j]);    
     // k_wall[j] = 25.0;
   end for;
     

@@ -47,7 +47,7 @@ model Flow1DFV
     //   "Enthalpy state variables";
     Medium.Temperature Ttilde[N - 1](start=linspace(Tstartin, Tstartout, N-1), each stateSelect=StateSelect.prefer)
     "Temperature state variables";      
-    Medium.Temperature T[N](start=Tstart, each stateSelect= StateSelect.prefer) "Node temperatures";
+    Medium.Temperature T[N](start=Tstart, each stateSelect= StateSelect.default) "Node temperatures";
     Medium.SpecificEnthalpy h[N](start=hstart) "Node specific enthalpies";
     // Medium.MassFraction Xi[if UniformComposition or Medium.fixedX then 1 else N, nXi] "Node mass fraction";
     // Medium.Temperature Tin(start=Tstartin);    
@@ -117,7 +117,7 @@ model Flow1DFV
       Kf = Cfnom*omega_hyd*L/(2*A^3)*Kfc;
       Cf = Cfnom*Kfc;
     elseif FFtype == FFtypes.Colebrook then
-      Cf = f_colebrook(
+      Cf = ThermoPower.Water.f_colebrook(
           w,
           Dhyd/A,
           e,
@@ -177,9 +177,12 @@ model Flow1DFV
         // index error in following equation
         // dMdt[j] = A*l*(drbdT1[j]*der(T[j]) + drbdT2[j]*der(T[j+1]) + drbdp[j]*der(p) + vector(drbdX1[j, :]) * vector(der(Xi[j])) + vector(drbdX2[j, :]) * vector(der(Xi[j+1])))
         // dMdt[j] = A*l*(dddT[j+1]*der(Ttilde[j]) + drbdp[j]*der(p))
-        // dMdt[j] = A*l*(drbdT1[j]*der(T[j]) + drbdT2[j]*der(T[j+1]) + drbdp[j]*der(p))        
-        dMdt[j] = A*l*(drbdT1[j]*der(Ttilde[j-1]) + drbdT2[j]*der(Ttilde[j]) + drbdp[j]*der(p))        
-          "Mass derivative for each volume";
+        // dMdt[j] = A*l*(drbdT1[j]*der(T[j]) + drbdT2[j]*der(T[j+1]) + drbdp[j]*der(p))
+        if j == 1 then
+           dMdt[j] = A*l*(drbdT1[j]*der(T[1]) + drbdT2[j]*der(Ttilde[j]) + drbdp[j]*der(p));
+        else
+           dMdt[j] = A*l*(drbdT1[j]*der(Ttilde[j-1]) + drbdT2[j]*der(Ttilde[j]) + drbdp[j]*der(p))"Mass derivative for each volume";
+        end if;
           
         if avoidInletEnthalpyDerivative and j == 1 then
           // first volume properties computed by the volume outlet properties
@@ -254,7 +257,8 @@ model Flow1DFV
       // X[j] = gas[j].Xi;
       // MyUtil.myAssert(debug = false, val_test = T[j], min = 274, max = 1e6, name_val = "T[j]", val_ref = {j, p, h[j]}, name_val_ref = {"j", "p", "h[j]"});      
       rho[j] = Medium.density(gas[j]);
-      drdp[j] = if Medium.singleState then 0 else Medium.density_derp_h(gas[j]);      
+      drdp[j] = if Medium.singleState then 0 else  (Medium.density(Medium.setState_ph(p, h[j]+1e-3)) -  Medium.density(Medium.setState_ph(p, h[j])))/1e-3;
+      // drdp[j] = Medium.density_derp_h(gas[j]);
       // drdh[j] = Medium.density_derh_p(gas[j]);
       u[j] = w/(rho[j]*A);
     end for;

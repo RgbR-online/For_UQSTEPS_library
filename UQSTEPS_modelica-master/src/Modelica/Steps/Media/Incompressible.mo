@@ -37,9 +37,7 @@ package Incompressible "Medium model for T-dependent properties, defined by tabl
     extends Modelica.Media.Interfaces.PartialPureSubstance(
     ThermoStates = if enthalpyOfT 
     then Modelica.Media.Interfaces.Choices.IndependentVariables.T 
-    else Modelica.Media.Interfaces.Choices.IndependentVariables.pT, 
-    final reducedX = true, 
-    final fixedX = true, 
+    else Modelica.Media.Interfaces.Choices.IndependentVariables.pT,
     mediumName = "tableMedium", 
     redeclare record ThermodynamicState = Modelica.Media.Incompressible.Common.BaseProps_Tpoly, 
     singleState = true, 
@@ -94,7 +92,7 @@ package Incompressible "Medium model for T-dependent properties, defined by tabl
         smoothOrder = 3);
     end invertTemp;
 
-    redeclare model extends BaseProperties(final standardOrderComponents = true, p_bar = Cv.to_bar(p), T_degC(start = T_start - 273.15) = Cv.to_degC(T), T(start = T_start, stateSelect = if preferredMediumStates then StateSelect.prefer else StateSelect.default)) "Base properties of T dependent medium"
+    redeclare model extends BaseProperties(p_bar = Cv.to_bar(p), T_degC(start = T_start - 273.15) = Cv.to_degC(T), T(start = T_start, stateSelect = if preferredMediumStates then StateSelect.prefer else StateSelect.default)) "Base properties of T dependent medium"
         //  redeclare parameter SpecificHeatCapacity R=Modelica.Constants.R,
         SI.SpecificHeatCapacity cp "Specific heat capacity";
         parameter SI.Temperature T_start = 298.15 "Initial temperature";

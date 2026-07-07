@@ -136,8 +136,26 @@ model SimpleCycleConfig
       l_pitch  = l_pitch_h,
       a_phi    = a_phi_h
     ),
-    cfg_fluid  = cfg_cold,
-    cfg_gas    = cfg_hot,
+    cfg_fluid(
+      st_in    = st_heater_cin,
+      st_out   = st_heater_cout,
+      geo_area = ga_heater_flow,
+      geo_path = gp_heater_flow,
+      N_ch     = N_ch,
+      u        = 0,
+      l_pitch  = l_pitch_h,
+      a_phi    = a_phi_h
+    ),
+    cfg_gas(
+      st_in    = st_heater_hin,
+      st_out   = st_heater_hout,
+      geo_area = ga_heater_flow,
+      geo_path = gp_heater_flow,
+      N_ch     = N_ch,
+      u        = 0,
+      l_pitch  = l_pitch_h,
+      a_phi    = a_phi_h
+    ),
     cfg_wall(
       st_init  = st_heater_hin,
       geo_area = ga_heater_wall,

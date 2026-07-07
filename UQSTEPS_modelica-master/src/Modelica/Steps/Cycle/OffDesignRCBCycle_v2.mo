@@ -7,7 +7,8 @@ model OffDesignRCBCycle_v2
   import Modelica.SIunits.{Temperature, Pressure, SpecificEnthalpy};
   import Util = Utilities.Util;
   import Steps.Utilities.CoolProp.PropsSI;  
-  import Steps.Components.{PCHEBoundaryCondition, ThermoState, PCHEGeoParam};   
+  import Steps.Components.{ThermoState, PCHEGeoParam}; 
+  import Model.HEBoundaryCondition;  
   
   // parameter I get after a success simulation with a CImpl model
   parameter OffDPBParamSet param_CImpl_v2(

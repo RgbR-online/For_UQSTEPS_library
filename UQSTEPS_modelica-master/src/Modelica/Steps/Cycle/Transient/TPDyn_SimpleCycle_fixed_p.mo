@@ -242,7 +242,7 @@ model TPDyn_SimpleCycle_fixed_p
     annotation(
     Placement(visible = true, transformation(origin = {103, -11}, extent = {{-11, -11}, {11, 11}}, rotation = 0)));
  
-  Steps.TPComponents.GasStateReader r_comp_in(redeclare package Medium = Medium); 
+  /*Steps.TPComponents.GasStateReader r_comp_in(redeclare package Medium = Medium); 
   
   Steps.TPComponents.FixedPController FPC_comp(
     redeclare package Medium = Medium,
@@ -252,7 +252,7 @@ model TPDyn_SimpleCycle_fixed_p
     Ndesign                    = cfg_comp.N,
     Tdes_in                    = cfg_comp.st_in.T
   );
-  
+  */
   Modelica.Mechanics.Rotational.Sources.Speed speed_comp(
     exact = false,
     w_ref(nominal(cfg_comp.N))
@@ -286,9 +286,9 @@ model TPDyn_SimpleCycle_fixed_p
     h(start = cfg_turb.st_out.h))) annotation(
     Placement(visible = true, transformation(origin = {-69, -51}, extent = {{-11, -11}, {11, 11}}, rotation = 0))); 
  
-  Steps.TPComponents.GasStateReader r_turb_in(redeclare package Medium = Medium) annotation(
+  /*Steps.TPComponents.GasStateReader r_turb_in(redeclare package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {-92, -38}, extent = {{-4, -4}, {4, 4}}, rotation = 0)));
-
+*/
   Steps.TPComponents.TurbineFixedPController FPC_turb(
     redeclare package Medium   = Medium,
     fileName  = Modelica.Utilities.Files.loadResource("modelica://Steps/Resources/Data/turbine_map_2.txt"),

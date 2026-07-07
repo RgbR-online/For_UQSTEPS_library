@@ -16,6 +16,9 @@ model OilHeater
   
   SI.SpecificHeatCapacity cp_in;
   
+  PBMedia.ThermodynamicState medium_in "État thermodynamique à l'entrée";
+  PBMedia.ThermodynamicState medium_out "État thermodynamique à la sortie";
+  
  //protected    
     Real C_min "c_min = min(m_flow_oil * cp_oil, m_flow_fluid * cp_fluid)";
     
@@ -23,19 +26,19 @@ model OilHeater
     
 equation
  
-  medium_in.state = PBMedia.setState_phX(p = inlet.p, h = inStream(inlet.h_outflow));    
-  cp_in = PBMedia.specificHeatCapacityCp(medium_in.state);
+  medium_in = PBMedia.setState_phX(inlet.p, inStream(inlet.h_outflow));
+  cp_in = PBMedia.specificHeatCapacityCp(medium_in);
 
   C_min = min(inlet.m_flow * cp_in , m_dot_hot * cp_hot);
   // maximum possible exchanged heat
   Q = eta * C_min * (T_hot_in - medium_in.T);
   
   outlet.p = inlet.p;
-  medium_out.state = PBMedia.setState_phX(p = outlet.p, h = inStream(inlet.h_outflow) + Q / inlet.m_flow);
- 
+  medium_out = PBMedia.setState_phX(outlet.p, inStream(inlet.h_outflow) + Q / inlet.m_flow);
+  
   outlet.m_flow + inlet.m_flow = 0;
   outlet.h_outflow = medium_out.h;
   inlet.h_outflow = inStream(outlet.h_outflow);
   
-  outlet.T = medium_out.T;
+  //outlet.T = medium_out.T;
 end OilHeater;

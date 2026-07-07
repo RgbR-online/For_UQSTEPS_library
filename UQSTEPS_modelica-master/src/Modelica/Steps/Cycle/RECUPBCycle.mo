@@ -35,9 +35,9 @@ model RECUPBCycle
   parameter Modelica.SIunits.TemperatureDifference DT_COOLER = 18.0;
   
   Steps.Components.FanCooler fan_colder(
-    T_amb = T_AMB,
+    T_output = T_AMB/*,
     delta_T = DT_COOLER,
-    outlet.PT = PortType.T_fixed
+    outlet.PT = PortType.T_fixed*/
   );
   
   // use pump as compressor

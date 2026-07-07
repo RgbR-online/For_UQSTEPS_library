@@ -5,7 +5,7 @@ model TestSplitter
   
   import Modelica.SIunits.Conversions.{from_bar, from_degC}; 
   import Steps.Components.PCHEBoundaryCondition;
-  import Steps.Components.ThermoState;
+  import Steps.Model.ThermoState;
   
   // **** parameter from on-design simulation - START ****
   // UQMECH05_99_CL02_B 1 MW Power Block (RCBC)_2.pdf
@@ -26,29 +26,29 @@ model TestSplitter
   parameter Modelica.SIunits.TemperatureDifference DT_COOLER = 18.0;    
   // **** Arbitary inputs - END ****      
   
-  Components.Source source(
+  Steps.Components.Source source(
     p_outlet = bc_in.p,
     T_outlet = bc_in.T,
     mdot_init = param.mdot_main,
     fix_state = true
   );
 
-  Components.Sink sink(
+  Steps.Components.Sink sink(
     p_inlet = bc_out_split.p,
     T_inlet = bc_out_split.T,
     mdot_init = param.mdot_pump,
     fix_state = false
   );
 
-  Components.Sink sink_2(
+  Steps.Components.Sink sink_2(
     p_inlet = bc_out.p,
     T_inlet = bc_out.T,
     mdot_init = param.mdot_bypass,
     fix_state = false
   );
 
-  Components.Splitter splitter(
-    split_ratio = 0.4
+  Steps.Components.Splitter splitter(
+    split_ratio = 0
   );
 
 equation

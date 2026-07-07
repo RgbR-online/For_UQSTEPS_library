@@ -1,4 +1,4 @@
-within Steps.Test.TPComponents;
+within Steps.AlreadyTried;
 
 model TestTP_PCHE
   "Test for ThermoPower based PCHE model"  

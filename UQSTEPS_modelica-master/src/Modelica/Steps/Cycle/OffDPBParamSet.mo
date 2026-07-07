@@ -7,7 +7,8 @@ model OffDPBParamSet
     import Modelica.SIunits.{Temperature, Pressure, SpecificEnthalpy};
     import Util = Utilities.Util;
     import Steps.Utilities.CoolProp.PropsSI;  
-    import Steps.Components.{PCHEBoundaryCondition, ThermoState, PCHEGeoParam, SimParam}; 
+    import Steps.Model.{HEBoundaryCondition,ThermoState, SimParam};
+    import Steps.Components.PCHEGeoParam;
 
     replaceable package PBMedia = Steps.Media.SCO2;   
 
@@ -43,9 +44,9 @@ model OffDPBParamSet
       // pitch angle
       phi = from_deg((180 - 108) /2),
       // length of pche, m
-      length = 2860e-3,
+      L = 2860e-3,
       // Diameter of semi_circular, m
-      d_c = 2e-3,
+      d = 2e-3,
       // number of channels
       N_ch = integer(94e3),
       // number of segments
@@ -57,31 +58,31 @@ model OffDPBParamSet
       // pitch angle
       phi = from_deg((180 - 108) /2),
       // length of pche, m
-      length = 3270e-3,
+      L = 3270e-3,
       // Diameter of semi_circular, m
-      d_c = 2e-3,
+      d = 2e-3,
       // number of channels
       N_ch = integer(125e3),
       // number of segments
       N_seg = 50);
       
     // **** Boundary Conditions as Start values for all components - start ****  
-    parameter PCHEBoundaryCondition bc_HTR(
+    parameter HEBoundaryCondition bc_HTR(
       st_hot_in(p = p_pump_in, T = from_degC(578.22), h = PropsSI("H", "P",  bc_HTR.st_hot_in.p, "T", bc_HTR.st_hot_in.T, PBMedia.mediumName), mdot = mdot_main),    
       st_cold_in(p = p_pump_out, T = T_HTR_cold_in, h = PropsSI("H", "P", bc_HTR.st_cold_in.p, "T", bc_HTR.st_cold_in.T, PBMedia.mediumName), mdot = mdot_main),
       st_hot_out(p = p_pump_in, T = T_HTR_hot_out, h = PropsSI("H", "P", bc_HTR.st_hot_out.p, "T", bc_HTR.st_hot_out.T, PBMedia.mediumName), mdot = mdot_main),
       st_cold_out(p = p_pump_out, T = from_degC(533.5), h = PropsSI("H", "P", bc_HTR.st_cold_out.p, "T", bc_HTR.st_cold_out.T, PBMedia.mediumName), mdot = mdot_main));      
   
     // boundary condition for LTR test @ diff mdot
-    parameter PCHEBoundaryCondition bc_LTR(
+    parameter HEBoundaryCondition bc_LTR(
       st_hot_in(p = p_pump_in, T = T_LTR_hot_in, h = PropsSI("H", "P", bc_LTR.st_hot_in.p, "T", bc_LTR.st_hot_in.T, PBMedia.mediumName), mdot = mdot_main),    
       st_cold_in(p = p_pump_out, T = from_degC(62.229), h = PropsSI("H", "P", bc_LTR.st_cold_in.p, "T", bc_LTR.st_cold_in.T, PBMedia.mediumName), mdot = mdot_pump),
       st_hot_out(p = p_pump_in, T = from_degC(67.229), h = PropsSI("H", "P", bc_LTR.st_hot_out.p, "T", bc_LTR.st_hot_out.T, PBMedia.mediumName), mdot = mdot_main),
       st_cold_out(p = p_pump_out, T = T_LTR_cold_out, h = PropsSI("H", "P", bc_LTR.st_cold_out.p, "T", bc_LTR.st_cold_out.T, PBMedia.mediumName), mdot = mdot_pump)); 
        
-    parameter Steps.Components.ThermoState bc_cooler_out(p = bc_LTR.st_hot_out.p, T = from_degC(33), h = PropsSI("H", "P", bc_cooler_out.p, "T", bc_cooler_out.T, PBMedia.mediumName), mdot = mdot_pump);    
-    parameter Steps.Components.ThermoState bc_heater_out(p = bc_HTR.st_cold_out.p, T = from_degC(700), h = PropsSI("H", "P", bc_heater_out.p, "T", bc_heater_out.T, PBMedia.mediumName), mdot = mdot_main);    
-    parameter Steps.Components.ThermoState bc_bypass(p = bc_HTR.st_cold_in.p, T = T_bypass_out, h = PropsSI("H", "P", bc_bypass.p, "T", bc_bypass.T, PBMedia.mediumName), mdot = mdot_bypass);
+    parameter Steps.Model.ThermoState bc_cooler_out(p = bc_LTR.st_hot_out.p, T = from_degC(33), h = PropsSI("H", "P", bc_cooler_out.p, "T", bc_cooler_out.T, PBMedia.mediumName), mdot = mdot_pump);    
+    parameter Steps.Model.ThermoState bc_heater_out(p = bc_HTR.st_cold_out.p, T = from_degC(700), h = PropsSI("H", "P", bc_heater_out.p, "T", bc_heater_out.T, PBMedia.mediumName), mdot = mdot_main);    
+    parameter Steps.Model.ThermoState bc_bypass(p = bc_HTR.st_cold_in.p, T = T_bypass_out, h = PropsSI("H", "P", bc_bypass.p, "T", bc_bypass.T, PBMedia.mediumName), mdot = mdot_bypass);
     
    // **** Boundary Conditions as Start values for all components - end ****      
    

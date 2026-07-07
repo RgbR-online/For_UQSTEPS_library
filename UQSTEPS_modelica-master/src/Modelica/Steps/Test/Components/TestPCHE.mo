@@ -17,48 +17,53 @@ model TestPCHE
   );
   */
   
-  Components.Source source_hot(
+  Steps.Components.Source source_hot(
     p_outlet = 9 * 1e6,
     T_outlet = Modelica.SIunits.Conversions.from_degC(451),
     mdot_init = 8.3,
     fix_state = false
   );
 
-  Components.Source source_cold(
+  Steps.Components.Source source_cold(
     p_outlet = 20 * 1e6,
     T_outlet = Modelica.SIunits.Conversions.from_degC(41),
     mdot_init = 8.3,
     fix_state = true
   );
 
-  Components.Sink sink_hot(
+  Steps.Components.Sink sink_hot(
     p_inlet = 8.88 * 1e6,
     T_inlet = Modelica.SIunits.Conversions.from_degC(51),
     mdot_init = 8.3,
     fix_state = true
   );
 
-  Components.Sink sink_cold(
+  Steps.Components.Sink sink_cold(
     p_inlet = 20 * 1e6,
     T_inlet = Modelica.SIunits.Conversions.from_degC(332.9),
     mdot_init = 8.3,
     fix_state = false
   );
  
-  Components.PCHeatExchanger pche(
+  Steps.Components.PCHeatExchanger pche(
+    // 1. Modification des paramètres géométriques via le sous-bloc geo
+    geo(
+      phi = Modelica.SIunits.Conversions.from_deg(45),
+      d = 1.51 * 1e-3,       // Attention : dans geo, le paramètre s'appelle 'd' et non 'd_c'
+      pitch = 24.6 * 1e-3,
+      L = 20 * 8e-2,         // L = N_seg * length_cell (20 * 0.08m = 1.6m)
+      N_seg = 20             // C'est ici qu'on change le nombre de segments !
+    ),
     
-phi = Modelica.SIunits.Conversions.from_deg(45), 
-    Re_design = 5000,
-    d_c = 1.51 * 1e-3,
-    T_hot_in = Modelica.SIunits.Conversions.from_degC(451),
-    T_cold_in = Modelica.SIunits.Conversions.from_degC(41),
-    p_hot = 9 * 1e6,
-    p_cold = 20 * 1e6,
-    m_dot_hot = 8.3,
-    m_dot_cold = 8.3,
-    pitch = 24.6 * 1e-3,
-    length_cell = 8e-2,
-    N_seg = 20
+    // 2. Modification des conditions initiales/aux limites via le sous-bloc bc
+    bc(
+      st_hot_in(p = 9 * 1e6, T = Modelica.SIunits.Conversions.from_degC(451), mdot = 8.3),
+      st_cold_in(p = 20 * 1e6, T = Modelica.SIunits.Conversions.from_degC(41), mdot = 8.3)
+    ),
+    
+    // 3. Drapeaux pour aider le solveur numérique à converger
+    ByInlet_hot = true,
+    ByInlet_cold = true
   );
   
   /*
