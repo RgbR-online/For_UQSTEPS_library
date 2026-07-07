@@ -1,0 +1,12 @@
+# Sauvegardes OpenModelica
+*.bak-mo
+*.bak-mos
+
+# Fichiers de compilation/simulation
+*.exe
+*.log
+*.libs
+*.c
+*.h
+*.makefile
+*.mat
