@@ -25,16 +25,16 @@ model RCBCycleConfig
   // **** Boundary Conditions as Start values for recuperators - start ****
   // Core INPUT parameters for boundary conditions **** 
   // following values are calculated by sscar for 10 MW power block( mdot_main = 125, T_amb = 35oC, split_ratio = 0.675)
-  parameter Modelica.SIunits.Pressure p_comp_in  = 9e6;
-  parameter Modelica.SIunits.Pressure p_comp_out = 20e6;
+  parameter Modelica.SIunits.Pressure p_comp_in  = 7.8e6;
+  parameter Modelica.SIunits.Pressure p_comp_out = 36.6e6;
   parameter Modelica.SIunits.Pressure p_amb      = 1.01325e6;
   parameter Modelica.SIunits.Pressure p_heater   = 20e6;
   
   parameter Modelica.SIunits.Temperature T_amb             = from_degC(35);
-  parameter Modelica.SIunits.Temperature T_HTR_hot_in      = from_degC(636.95057734);
-  parameter Modelica.SIunits.Temperature T_HTR_cold_out    = from_degC(605.011512655);
-  parameter Modelica.SIunits.Temperature T_HTR_hot_out     = from_degC(167.14450349);
-  parameter Modelica.SIunits.Temperature T_HTR_cold_in     = from_degC(162.14458875);
+  parameter Modelica.SIunits.Temperature T_HTR_hot_in      = from_degC(600);
+  parameter Modelica.SIunits.Temperature T_HTR_cold_out    = from_degC(595);
+  parameter Modelica.SIunits.Temperature T_HTR_hot_out     = from_degC(300);
+  parameter Modelica.SIunits.Temperature T_HTR_cold_in     = from_degC(294);
   parameter Modelica.SIunits.Temperature T_LTR_cold_in     = from_degC(85.84344872);
   parameter Modelica.SIunits.Temperature T_LTR_hot_out     = from_degC(90.84344686);
   parameter Modelica.SIunits.Temperature T_heater_hot_in   = from_degC(800);
@@ -44,8 +44,8 @@ model RCBCycleConfig
   parameter Modelica.SIunits.Temperature T_cooler_hot_out  = from_degC(45);
   parameter Modelica.SIunits.Temperature T_recom_out       = from_degC(227.7022889);
 
-  parameter Modelica.SIunits.MassFlowRate mdot_main   = 128.774;
-  parameter Modelica.SIunits.MassFlowRate mdot_comp   = 84.375;
+  parameter Modelica.SIunits.MassFlowRate mdot_main   = 55;
+  parameter Modelica.SIunits.MassFlowRate mdot_comp   = 55;
   parameter Modelica.SIunits.MassFlowRate mdot_heater = 40;
   parameter Modelica.SIunits.MassFlowRate mdot_cooler = 40;
 

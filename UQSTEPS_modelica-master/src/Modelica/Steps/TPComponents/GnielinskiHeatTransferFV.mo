@@ -12,7 +12,7 @@ model GnielinskiHeatTransferFV "Gnielinski heat transfer Correlation"
   //parameter Modelica.SIunits.Length pitch = 24.6 * 1e-3;
   //parameter Modelica.SIunits.Angle phi = 0.0 "unit rad";
   parameter Real Re_min = 2300 "Minimum Reynolds number";
-  parameter Real gamma_max = 15000, gamma_min = 1500 "max and min valid gamma, to prevent unfeasible gamma";
+  parameter Real gamma_max = 15000, gamma_min = 1000 "max and min valid gamma, to prevent unfeasible gamma";
   
   SI.Length d_c = (8 * A / Modelica.Constants.pi) ^ 0.5 "Diameter of semi_circular";
   /*

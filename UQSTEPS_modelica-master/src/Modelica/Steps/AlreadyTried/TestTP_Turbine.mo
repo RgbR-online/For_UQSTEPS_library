@@ -1,164 +1,108 @@
 within Steps.AlreadyTried;
 
-model TestTP_Turbine
-  "Test for HE in ThermoPower"  
-  import Modelica.SIunits.Conversions.{from_degC, from_deg};
-  import Modelica.SIunits.{Temperature, Pressure, SpecificEnthalpy};
+model TestTP_Turbine "Test unitaire pour la turbine sCO2 s'appuyant sur RecupBraytonCycleConfig_Motor"
+  import Modelica.SIunits.Conversions.{from_degC,from_deg};
+  import Modelica.SIunits.{Temperature,Pressure,SpecificEnthalpy};
   import Util = Utilities.Util;
-  import Steps.Utilities.CoolProp.PropsSI;  
+  import Steps.Utilities.CoolProp.PropsSI;
   import Steps.Components.{PCHEGeoParam};
-  import Steps.Model.{PBConfiguration, SimParam, EntityConfig, EntityGeoParam, EntityThermoParam, ThermoState, HEBoundaryCondition} ;
-  import Model.PBConfiguration;
+  import Steps.Model.PBConfiguration;
+  import Steps.Model.{PBConfiguration,SimParam,EntityConfig,EntityGeoParam,EntityThermoParam,ThermoState,HEBoundaryCondition};
   import ThermoPower.Choices.Init.Options;
   import ThermoPower.System;
   import ThermoPower.Gas;
-/*  
-  package medium_hot = Steps.Media.CO2;
-  package medium_cold = Steps.Media.CO2;
-  // package medium_hot = Steps.Media.CO2;
-  // package medium_cold = Steps.Media.CO2;
-  // package medium_heater = SolarTherm.Media.Sodium.Sodium_pT;
-  package medium_heater = Steps.Media.CO2;
-  // package medium_heater = ThermoPower.Water.StandardWater;// Modelica.Media.IdealGases.SingleGases.CO2;
-*/
 
-  // package Medium = Media.CO2;
-  
-  package Medium = Steps.Media.SCO2(
-    // inputChoice = ExternalMedia.Common.InputChoice.pT,
-    substanceNames = {"CO2|debug=40"}    
-  );
-  
-  // package Medium = ExternalMedia.Examples.CO2CoolProp;
-  
-  // parameter for C++ implementation of PCHE - based on Modelica impl's result    
-  parameter Model.RCBCycleConfig cfg(
-    redeclare package medium_main = Medium,
-    Ns_turb  = 30000,
-    mdot_main = 100,
-    mdot_heater = 40
-  );
-  /*
-  (
-    mdot_main = 100,
-    T_heater_cold_out = from_degC(700),
-    Ns_comp = 30000
-  );
-  */
-  // set the values of parameters accordingly
-  parameter Model.TurbomachineryConfig cfg_turb = cfg.cfg_turb;
-  parameter Model.ThermoState st_source         = cfg_turb.st_in;
-  parameter Model.ThermoState st_sink           = cfg_turb.st_out;
-  
+  // 1. Instanciation du fichier de configuration global
+  parameter Steps.AlreadyTried.RecupBraytonCycleConfig_Motor cfg;
 
-  /*ThermoPower.Gas.SourceMassFlow SourceP1(
-    redeclare package Medium = Medium, 
-    T        = st_source.T,
-    p0       = st_source.p,
-    use_in_T = false,
-    w0       = st_source.mdot,
-    gas(
-      p(nominal = st_source.p), 
-      T(nominal = st_source.T))) 
-  annotation(
-    Placement(transformation(origin = {0, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
-  */
-  
+  // 2. Utilisation du Medium de la configuration globale
+  package Medium = Steps.AlreadyTried.RecupBraytonCycleConfig_Motor.medium_main;
+
+  // =========================================================================
+  // INSTANCIATION DES COMPOSANTS
+  // =========================================================================
+
+  // --- Source de Pression (Aspiration) ---
   ThermoPower.Gas.SourcePressure SourceP1(
     redeclare package Medium = Medium, 
-    T = st_source.T, 
-    p0 = st_source.p,
-    //h = bc_heater.st_cold_out.h, 
+    T = cfg.cfg_turb.st_in.T, 
+    p0 = cfg.cfg_turb.st_in.p, 
     use_in_T = false, 
-    //w0 = bc_heater.st_cold_out.mdot,    
     gas(
-      p(nominal = st_source.p), 
-      T(nominal = st_source.T))) 
+      p(nominal = cfg.cfg_turb.st_in.p), 
+      T(nominal = cfg.cfg_turb.st_in.T))) 
   annotation(
-    Placement(transformation(origin = {0, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
-  
-  
-  ThermoPower.Gas.Turbine Turbine1(
+    Placement(transformation(origin = {-80, 16}, extent = {{-10, -10}, {10, 10}})));
+
+  // --- Turbine ---
+  ThermoPower.Gas.Turbine turbine(
     redeclare package Medium = Medium, 
-    fileName                   = Modelica.Utilities.Files.loadResource("modelica://Steps/Resources/Data/turbine_map.txt"),
-    tablePhic                  = tablePhic,                                                                               //tablePhic, 
-    tableEta                   = tableEta,                                                                               //tableEta, 
-    pstart_in                  = cfg_turb.st_in.p,
-    pstart_out                 = cfg_turb.st_out.p,
-    Tstart_in                  = cfg_turb.st_in.T,
-    Tstart_out                 = cfg_turb.st_out.T,
-    Ndesign                    = cfg_turb.N,
-    Tdes_in                    = cfg_turb.st_in.T,
-    Table                      = ThermoPower.Choices.TurboMachinery.TableTypes.file,
-    //explicitIsentropicEnthalpy = false,
+    tablePhic = cfg.tablePhic_turb, 
+    tableEta = cfg.tableEta_turb, 
+    pstart_in = cfg.cfg_turb.st_in.p, 
+    pstart_out = cfg.cfg_turb.st_out.p, 
+    Tstart_in = cfg.cfg_turb.st_in.T, 
+    Tstart_out = cfg.cfg_turb.st_out.T, 
+    Ndesign = cfg.cfg_turb.N, 
+    Tdes_in = cfg.cfg_turb.st_in.T, 
+    Table = ThermoPower.Choices.TurboMachinery.TableTypes.matrix, 
+    explicitIsentropicEnthalpy = true, 
     gas_in(
-      p(nominal = cfg_turb.st_in.p), 
-      T(nominal = cfg_turb.st_in.T),
-      h(nominal = cfg_turb.st_in.h)),
+      p(nominal = cfg.cfg_turb.st_in.p), 
+      T(nominal = cfg.cfg_turb.st_in.T), 
+      h(nominal = cfg.cfg_turb.st_in.h)), 
     gas_iso(
-      p(nominal = cfg_turb.st_out.p), 
-      T(nominal = cfg_turb.st_out.T),
-      h(
-        start = cfg_turb.st_out.h,         
-        nominal = cfg_turb.st_out.h)))
-    annotation(
-      Placement(transformation(extent = {{-40, -20}, {0, 20}}, rotation = 0)));
-  
-  ThermoPower.Gas.SinkPressure SinkP1(
-  redeclare package Medium = Medium, 
-  p0 = st_sink.p,
-  T  = st_sink.T,
-  gas(
-    p(nominal = st_sink.p), 
-    T(nominal = st_sink.T)))
-  // h = bc_HTR.st_hot_in.h) 
+      p(nominal = cfg.cfg_turb.st_out.p), 
+      T(nominal = cfg.cfg_turb.st_out.T), 
+      h(start = cfg.cfg_turb.st_out.h, nominal = cfg.cfg_turb.st_out.h))) 
   annotation(
-    Placement(visible = true, transformation(extent = {{50, 6}, {70, 26}}, rotation = 0)));
+    Placement(transformation(extent = {{-20, -20}, {20, 20}})));
 
-  Modelica.Mechanics.Rotational.Sources.ConstantSpeed const_speed_comp(
-      w_fixed=cfg_turb.N, useSupport=false) annotation(
-    Placement(visible = true, transformation(origin = {81, -7}, extent = {{-5, -5}, {5, 5}}, rotation = 0)));  
- 
+  // --- Source de Vitesse Constante (Entraînement mécanique) ---
+  Modelica.Mechanics.Rotational.Sources.ConstantSpeed ConstantSpeed1(
+    w_fixed = cfg.cfg_turb.N, 
+    useSupport = false) 
+  annotation(
+    Placement(transformation(origin = {46, 0}, extent = {{-10, -10}, {10, 10}})));
 
-  inner ThermoPower.System system(allowFlowReversal = false, initOpt=ThermoPower.Choices.Init.Options.noInit) annotation(
-    Placement(transformation(extent = {{80, 80}, {100, 100}})));
+  // --- Puits de Débit Massique (Refoulement) ---
+  ThermoPower.Gas.SinkMassFlow SinkP1(
+    redeclare package Medium = Medium, 
+    T = cfg.cfg_turb.st_out.T, 
+    p0 = cfg.cfg_turb.st_out.p, 
+    use_in_T = false, 
+    use_in_w0 = false, 
+    w0 = cfg.mdot_turb) 
+  annotation(
+    Placement(transformation(origin = {80, 16}, extent = {{-10, -10}, {10, 10}})));
 
-  //ThermoPower.Gas.SensT T_gasIn(redeclare package Medium = Medium);
-  //ThermoPower.Gas.SensT T_gasOut(redeclare package Medium = Medium);
-  Modelica.SIunits.Power W_turb = (Turbine1.gas_in.h - Turbine1.hout) * Turbine1.inlet.m_flow / 1e6 "W->MW, net power for turbine";
-  
-  Modelica.SIunits.Efficiency eta_turb = Turbine1.eta * 100;
-  
-protected
+  // --- Système Global ThermoPower ---
+  inner ThermoPower.System system 
+  annotation(
+    Placement(transformation(origin = {80, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
-  parameter Real tablePhic[5, 4] = [1, 37, 80, 100; 1.5, 7.10E-05, 7.10E-05, 7.10E-05; 2, 8.40E-05, 8.40E-05, 8.40E-05; 2.5, 8.70E-05, 8.70E-05, 8.70E-05; 3, 1.04E-04, 1.04E-04, 1.04E-04];
-  parameter Real tableEta[5, 4] = [1, 37, 80, 100; 1.5, 0.57, 0.89, 0.81; 2, 0.46, 0.82, 0.88; 2.5, 0.41, 0.76, 0.85; 3, 0.38, 0.72, 0.82];
+  // =========================================================================
+  // INDICATEURS DE PERFORMANCE
+  // =========================================================================
+  Modelica.SIunits.Power W_turb = (turbine.gas_in.h - turbine.hout) * turbine.inlet.m_flow / 1e6 "Puissance brute produite par la turbine (MW)";
+  Modelica.SIunits.Efficiency eta_turb = turbine.eta * 100 "Rendement isentropique de la turbine (%)";
 
 equation
-  /*
-  connect(SourceP1.flange, T_gasIn.inlet);
-  connect(T_gasIn.outlet, Turbine1.inlet) annotation(
-    Line(points = {{-60, 16}, {-36, 16}}, color = {159, 159, 223}, thickness = 0.5));
+  // Connexion de la source vers l'entrée de la turbine
+  connect(SourceP1.flange, turbine.inlet) annotation(
+    Line(points = {{-70, 16}, {-16, 16}}, color = {159, 159, 223}, thickness = 0.5));
 
-  connect(Turbine1.outlet, T_gasOut.inlet) annotation(
-    Line(points = {{-4, 16}, {6, 16}, {6, 40}, {14, 40}, {14, 40}}, color = {159, 159, 223}));
-  connect(T_gasOut.outlet, SinkP1.flange) annotation(
-    Line(points = {{26, 40}, {36, 40}, {36, 16}, {50, 16}}, color = {159, 159, 223}));
-  */
-  
-  connect(SourceP1.flange, Turbine1.inlet) annotation(
-    Line(points = {{-60, 16}, {-36, 16}}, color = {159, 159, 223}, thickness = 0.5));
+  // Connexion de la sortie de la turbine vers le puits
+  connect(turbine.outlet, SinkP1.flange) annotation(
+    Line(points = {{16, 16}, {70, 16}}, color = {159, 159, 223}, thickness = 0.5));
 
-  connect(Turbine1.outlet, SinkP1.flange) annotation(
-    Line(points = {{26, 40}, {36, 40}, {36, 16}, {50, 16}}, color = {159, 159, 223}));
-
-  connect(Turbine1.shaft_b, const_speed_comp.flange) annotation(
-    Line(points = {{30, 0}, {74, 0}, {74, 0}, {74, 0}}));
+  // Connexion de l'arbre mécanique
+  connect(ConstantSpeed1.flange, turbine.shaft_b) annotation(
+    Line(points = {{36, 0}, {12, 0}}, thickness = 0.5));
 
   annotation(
-    Diagram(graphics),
+    Diagram,
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-3, Interval = 1),
-    __OpenModelica_commandLineOptions = "--matchingAlgorithm=PFPlusExt --indexReductionMethod=dynamicStateSelection -d=initialization,NLSanalyticJacobian,aliasConflicts,bltdump",    
+    __OpenModelica_commandLineOptions = "--matchingAlgorithm=PFPlusExt --indexReductionMethod=dynamicStateSelection -d=initialization,NLSanalyticJacobian,aliasConflicts,bltdump",
     __OpenModelica_simulationFlags(lv = "LOG_DEBUG,LOG_NLS,LOG_NLS_V,LOG_STATS,LOG_INIT,LOG_STDOUT, -w", outputFormat = "mat", s = "dassl", nls = "homotopy"));
-
 end TestTP_Turbine;

@@ -1,7 +1,9 @@
-TestTP_PCHE
 TestSplitter
 TestMixer
 Source
 Sink
 TestTP_Turbine
 TestTP_Compressor
+TestTP_PCHE
+RecupBraytonCycle_Motor
+RecupBraytonCycleConfig_Motor
